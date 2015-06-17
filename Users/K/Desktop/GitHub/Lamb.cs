@@ -22,6 +22,7 @@ namespace 黑羊白羊
         Bitmap ImageSmall;
         public  Map[] Maps;
         Renderer renderer;
+        bool LambArriveENDcounted;//記錄抵達終點的lamb是否已經算進去了
         public Lamb(Point Location,Bitmap ImageSmall,Bitmap ImageBig,bool front,int PlayerNumber,Renderer renderer)
         {
             this.Location = Location;
@@ -35,7 +36,7 @@ namespace 黑羊白羊
             LambArrived = false;
             SetMapImage();
             SetMaps();
-           
+            LambArriveENDcounted = false;
         }
 
         //移動改寫 加入地圖進行判斷
@@ -66,40 +67,64 @@ namespace 黑羊白羊
             }
         }
 
-       /* public void LambCanMoveAndMapLight()
-        {
-            
-            if (Maps[0].GetArea().IntersectsWith(ImageArea))
-            {
-                Maps[1].ChangeLight();
-            }
-            else if (Maps[1].GetArea().IntersectsWith(ImageArea))
-            {
-                Maps[0].ChangeLight();
+       /*  public void LambCanMoveAndMapLight()
+         {
 
-                Maps[2].ChangeLight();
+             if (Maps[0].GetArea().IntersectsWith(ImageArea))
+             {
+                 if (Maps[1].GetHaveLamb() != true)
+                 {
+                     Maps[1].ChangeLight();
+                 }
 
-            }
-            else if (Maps[2].GetArea().IntersectsWith(ImageArea))
-            {
-                Maps[1].ChangeLight();
-                Maps[3].ChangeLight();
-            }
-            else if (Maps[3].GetArea().IntersectsWith(ImageArea))
-            {
-                Maps[2].ChangeLight();
-                Maps[4].ChangeLight();
-            }
-            else if (Maps[4].GetArea().IntersectsWith(ImageArea))
-            {
-                Maps[3].ChangeLight();
-                Maps[5].ChangeLight();
-            }
-            else if (Maps[5].GetArea().IntersectsWith(ImageArea))
-            {
-                Maps[4].ChangeLight();
-            }
-        }*/
+             }
+             else if (Maps[1].GetArea().IntersectsWith(ImageArea))
+             {
+                 Maps[0].ChangeLight();
+                 if (Maps[2].GetHaveLamb() != true)
+                 {
+                     Maps[2].ChangeLight();
+                 }
+             }
+             else if (Maps[2].GetArea().IntersectsWith(ImageArea))
+             {
+                 if (Maps[1].GetHaveLamb() != true)
+                 {
+                     Maps[1].ChangeLight();
+                 }
+                 if (Maps[3].GetHaveLamb() != true)
+                 {
+                     Maps[3].ChangeLight();
+                 }
+             }
+             else if (Maps[3].GetArea().IntersectsWith(ImageArea))
+             {
+                 if (Maps[2].GetHaveLamb() != true)
+                 {
+                     Maps[2].ChangeLight();
+                 }
+                 if (Maps[4].GetHaveLamb() != true)
+                 {
+                     Maps[4].ChangeLight();
+                 }
+             }
+             else if (Maps[4].GetArea().IntersectsWith(ImageArea))
+             {
+                 if (Maps[3].GetHaveLamb() != true)
+                 {
+                     Maps[3].ChangeLight();
+                 }
+
+                     Maps[5].ChangeLight();
+             }
+             else if (Maps[5].GetArea().IntersectsWith(ImageArea))
+             {
+                 if (Maps[4].GetHaveLamb() != true)
+                 {
+                     Maps[4].ChangeLight();
+                 }
+             }
+         }*/
 
         //正反面判斷寫這邊
         public void LambCanMoveAndMapLight()//test用
@@ -107,10 +132,26 @@ namespace 黑羊白羊
 
             if (Maps[0].GetArea().IntersectsWith(ImageArea))
             {
-                if (Maps[1].GetHaveLamb() != true)
+                if (Maps[1].GetHaveLamb() != true)//沒羊
                 {
                     Maps[1].ChangeLight();
                 }
+                else
+                {//有羊
+                    if (Maps[1].lambonthemap.GetFront() == this.front && Maps[2].GetHaveLamb() != true)
+                    {
+                        Maps[2].ChangeLight();
+                    }
+                    if (Maps[1].lambonthemap.GetFront() != this.front)
+                    {
+                        Maps[1].ChangeLight();
+                    }
+                    if (Maps[3].GetHaveLamb() == true && Maps[3].lambonthemap.GetFront() == this.front && Maps[4].GetHaveLamb() != true && Maps[2].GetHaveLamb() != true && Maps[1].lambonthemap.GetFront() == this.front)
+                    {
+                        Maps[4].ChangeLight();
+                    }
+                }
+                
 
             }
             else if (Maps[1].GetArea().IntersectsWith(ImageArea))
@@ -120,6 +161,25 @@ namespace 黑羊白羊
                 {
                     Maps[2].ChangeLight();
                 }
+                else
+                {
+                    if (Maps[2].lambonthemap.GetFront() == this.front && Maps[3].GetHaveLamb() != true)
+                    {
+                        Maps[3].ChangeLight();
+                    }
+                    if (Maps[2].lambonthemap.GetFront() != this.front)
+                    {
+                        Maps[2].ChangeLight();
+                    }
+                    if (Maps[4].GetHaveLamb() == true && Maps[4].lambonthemap.GetFront() == this.front && Maps[2].lambonthemap.GetFront() == this.front)
+                    {
+                        if (Maps[3].GetHaveLamb() != true)
+                        {
+                            Maps[5].ChangeLight();
+                        }
+                    }
+                }
+               
             }
             else if (Maps[2].GetArea().IntersectsWith(ImageArea))
             {
@@ -127,9 +187,31 @@ namespace 黑羊白羊
                 {
                     Maps[1].ChangeLight();
                 }
+                else
+                {
+                    if (Maps[1].GetHaveLamb() == true && Maps[1].lambonthemap.GetFront() == this.front)
+                    {
+                        Maps[0].ChangeLight();
+                    }
+                    if (Maps[1].lambonthemap.GetFront() != this.front)
+                    {
+                        Maps[1].ChangeLight();
+                    }
+                }
                 if (Maps[3].GetHaveLamb() != true)
                 {
                     Maps[3].ChangeLight();
+                }
+                else
+                {
+                    if (Maps[3].lambonthemap.GetFront() == this.front && Maps[4].GetHaveLamb() != true)
+                    {
+                        Maps[4].ChangeLight();
+                    }
+                    if (Maps[3].lambonthemap.GetFront() != this.front)
+                    {
+                        Maps[3].ChangeLight();
+                    }
                 }
             }
             else if (Maps[3].GetArea().IntersectsWith(ImageArea))
@@ -138,9 +220,31 @@ namespace 黑羊白羊
                 {
                     Maps[2].ChangeLight();
                 }
+                else
+                {
+                    if (Maps[2].lambonthemap.GetFront() == this.front && Maps[1].GetHaveLamb() != true)
+                    {
+                        Maps[1].ChangeLight();
+                    }
+                    if (Maps[2].lambonthemap.GetFront() != this.front)
+                    {
+                        Maps[2].ChangeLight();
+                    }
+                }
                 if (Maps[4].GetHaveLamb() != true)
                 {
                     Maps[4].ChangeLight();
+                }
+                else
+                {
+                    if (Maps[4].GetHaveLamb() == true && Maps[4].lambonthemap.GetFront() == this.front)
+                    {
+                        Maps[5].ChangeLight();
+                    }
+                    if (Maps[4].lambonthemap.GetFront() != this.front)
+                    {
+                        Maps[4].ChangeLight();
+                    }
                 }
             }
             else if (Maps[4].GetArea().IntersectsWith(ImageArea))
@@ -148,6 +252,24 @@ namespace 黑羊白羊
                 if (Maps[3].GetHaveLamb() != true)
                 {
                     Maps[3].ChangeLight();
+                }
+                else
+                {
+                    if (Maps[3].lambonthemap.GetFront() == this.front && Maps[2].GetHaveLamb() != true)
+                    {
+                        Maps[2].ChangeLight();
+                    }
+                    if (Maps[1].GetHaveLamb() == true && Maps[1].lambonthemap.GetFront() == this.front && Maps[3].lambonthemap.GetFront() == this.front)
+                    {
+                        if (Maps[2].GetHaveLamb() != true)
+                        {
+                            Maps[0].ChangeLight();
+                        }
+                    }
+                    if (Maps[3].lambonthemap.GetFront() != this.front)
+                    {
+                        Maps[3].ChangeLight();
+                    }
                 }
 
                     Maps[5].ChangeLight();
@@ -157,6 +279,21 @@ namespace 黑羊白羊
                 if (Maps[4].GetHaveLamb() != true)
                 {
                     Maps[4].ChangeLight();
+                }
+                else
+                {//有羊
+                    if (Maps[4].lambonthemap.GetFront() == this.front && Maps[3].GetHaveLamb() != true && Maps[3].GetHaveLamb() != true)
+                    {
+                        Maps[3].ChangeLight();
+                    }
+                    if (Maps[2].GetHaveLamb() == true && Maps[2].lambonthemap.GetFront() == this.front && Maps[1].GetHaveLamb() != true && Maps[3].GetHaveLamb() != true && Maps[4].lambonthemap.GetFront() == this.front)
+                    {
+                        Maps[1].ChangeLight();
+                    }
+                    if (Maps[4].lambonthemap.GetFront() != this.front)
+                    {
+                        Maps[4].ChangeLight();
+                    }
                 }
             }
         }
@@ -224,6 +361,15 @@ namespace 黑羊白羊
                     LambArrived = true;
                 }
             }
+        }
+
+        public void ChangeLambArriveENDcounted()
+        {
+            LambArriveENDcounted = true;
+        }
+        public bool GetLambArriveENDcounted()
+        {
+            return LambArriveENDcounted;
         }
 
 
