@@ -15,6 +15,7 @@ namespace 黑羊白羊
         Rectangle ImageArea { get { return new Rectangle(new Point(Location.X, Location.Y), new Size(Image.Size.Width, Image.Size.Height)); } }
         bool HaveLamb;
         bool HaveLight;
+        public Lamb lambonthemap;
         public Map(Point location,Bitmap image,Bitmap imagelight,bool HaveLamb)
         {
             this.Image = image;
@@ -24,15 +25,17 @@ namespace 黑羊白羊
             this.HaveLamb = HaveLamb;
             HaveLight = false;
         }
-        public void ChangeHaveLamb()
+        public void ChangeHaveLamb(Lamb lamb)
         {
             if (HaveLamb)
             {
                 HaveLamb = false;
+                lambonthemap = null;
             }
             else
             {
                 HaveLamb = true;
+                lambonthemap = lamb;
             }
         }
         public bool GetHaveLamb()
@@ -69,6 +72,10 @@ namespace 黑羊白羊
                 Image = LightImage;
                 HaveLight = true;
             }
+        }
+        public void ChangeOnTheMapLamb(Lamb lamb)
+        {
+            lambonthemap = lamb;
         }
     }
 }
