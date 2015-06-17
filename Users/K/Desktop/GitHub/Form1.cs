@@ -86,6 +86,13 @@ namespace 黑羊白羊
                     else
                     {
                         LabelShow();
+                       /* 
+                        label4.Visible = true;
+                        label5.Visible = true;
+                        label4.Text = "player1" + Environment.NewLine + "lamb1 stack:" + game.testplayer1Lamb()[0].GetStack().ToString() + Environment.NewLine + "lamb2 stack:" + game.testplayer1Lamb()[1].GetStack().ToString() + Environment.NewLine + "lamb3 stack:" + game.testplayer1Lamb()[2].GetStack().ToString() + Environment.NewLine + "lamb4 stack:" + game.testplayer1Lamb()[3].GetStack().ToString() + Environment.NewLine + "lamb5 stack:" + game.testplayer1Lamb()[4].GetStack().ToString();
+                        label5.Text = "player2" + Environment.NewLine + "lamb1 stack:" + game.testplayer2Lamb()[0].GetStack().ToString() + Environment.NewLine + "lamb2 stack:" + game.testplayer2Lamb()[1].GetStack().ToString() + Environment.NewLine + "lamb3 stack:" + game.testplayer2Lamb()[2].GetStack().ToString() + Environment.NewLine + "lamb4 stack:" + game.testplayer2Lamb()[3].GetStack().ToString() + Environment.NewLine + "lamb5 stack:" + game.testplayer2Lamb()[4].GetStack().ToString();
+                    
+                        */
                     }
                 }
                 else
