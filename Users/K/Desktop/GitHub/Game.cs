@@ -117,6 +117,7 @@ namespace 黑羊白羊
 
 
         int mapcount;
+        bool lambstack;
         public void Move(Point ClickLocation, Lamb lamb)//控制遊戲的移動
         {
             LambMoving = false;
@@ -134,17 +135,13 @@ namespace 黑羊白羊
                 if (lamb.Maps[0].GetHaveLight() && lamb.Maps[0].GetArea().Contains(ClickLocation))
                 {
                     lamb.ChangeLocation(new Point(25, ClickLocation.Y - 25));
-                    //從map1移動到map0
-                    MapChangeHaveLamb(1);
 
+                    mapcount = 0;
                     
                 }
                 else if (lamb.Maps[1].GetHaveLight() && lamb.Maps[1].GetArea().Contains(ClickLocation))
                 {
                     lamb.ChangeLocation(new Point(160, ClickLocation.Y - 25));
-                    //從map0移動到map1
-                    //從map2移動到map1
-                    MapChangeHaveLamb(2);
 
                     
 
@@ -153,10 +150,6 @@ namespace 黑羊白羊
                 else if (lamb.Maps[2].GetHaveLight() && lamb.Maps[2].GetArea().Contains(ClickLocation))
                 {
                     lamb.ChangeLocation(new Point(340, ClickLocation.Y - 25));
-                    //從map1移動到map2
-                    //從map3移動到map2
-                    MapChangeHaveLamb(1);
-                    MapChangeHaveLamb(3);
                     
 
                     mapcount = 2;
@@ -164,8 +157,6 @@ namespace 黑羊白羊
                 else if (lamb.Maps[3].GetHaveLight() && lamb.Maps[3].GetArea().Contains(ClickLocation))
                 {
                     lamb.ChangeLocation(new Point(510, ClickLocation.Y - 25));
-                    MapChangeHaveLamb(2);
-                    MapChangeHaveLamb(4);
 
                     
 
@@ -174,7 +165,6 @@ namespace 黑羊白羊
                 else if (lamb.Maps[4].GetHaveLight() && lamb.Maps[4].GetArea().Contains(ClickLocation))
                 {
                     lamb.ChangeLocation(new Point(685, ClickLocation.Y - 25));
-                    MapChangeHaveLamb(3);
 
                    
 
@@ -183,49 +173,173 @@ namespace 黑羊白羊
                 else if (lamb.Maps[5].GetHaveLight() && lamb.Maps[5].GetArea().Contains(ClickLocation))
                 {
                     lamb.ChangeLocation(new Point(845, ClickLocation.Y - 25));
-                    MapChangeHaveLamb(4);
 
-                    
+                    mapcount = 5;
                 }
 
 
 
-                if (!lamb.GetLocation().Equals(LambOldLocation))
-                {
-                    //是否要疊起來判斷及疊起來移動寫這邊
-                    lamb.ArriveEnd();
-                    if(mapcount < 6)
+                if (!lamb.GetLocation().Equals(LambOldLocation))//不相等=>有移動
+                {                                               //相等=>沒移動
+                    
+                    
+                    if(mapcount < 5 && mapcount > 0)
                     {
                       for (int i = 0; i < Player1Lambs.Length; i++)
                       {
-                          Player1Lambs[i].Maps[mapcount].ChangeHaveLamb();
-                          Player2Lambs[i].Maps[mapcount].ChangeHaveLamb();
+                          Player1Lambs[i].Maps[mapcount].ChangeHaveLamb(lamb);
+                          Player2Lambs[i].Maps[mapcount].ChangeHaveLamb(lamb);
                       }
                     }
 
-                    if (lamb.GetLambArrived() == true)
+
+                    for (int i = 0; i < Player1Lambs.Length; i++)//堆疊
                     {
-                        if (lamb.GetPlayerNumber() == 1)
+                        if (Player1Lambs[i].GetLocation().X == lamb.GetLocation().X && lamb.GetLocation().X > 100 && lamb.GetLocation().X < 800 && !Player1Lambs[i].Equals(lamb) /*&& Player1Lambs[i].GetStack() != true*/)
+                        {
+                           if (Player1Lambs[i].GetFront() != lamb.GetFront() && Player1Lambs[i].GetStack() != true)
+                           {
+                               Player1Lambs[i].ChangeStack();
+                               lambstack = true;
+                           }
+                           else if (Player1Lambs[i].GetStack() == true && !Player2Lambs[i].Equals(lamb) && Player1Lambs[i].GetLocation().X != LambOldLocation.X)
+                           {
+                               if (lamb.GetStack() != true)
+                               {
+                                   lambstack = true;
+                               }
+                           }
+                        }
+                        if (Player2Lambs[i].GetLocation().X == lamb.GetLocation().X && lamb.GetLocation().X > 100 && lamb.GetLocation().X < 800 && !Player2Lambs[i].Equals(lamb) /*&& Player2Lambs[i].GetStack() != true*/)
+                        {
+                            
+                          if (Player2Lambs[i].GetFront() != lamb.GetFront() && Player2Lambs[i].GetStack() != true)
+                          {
+                              Player2Lambs[i].ChangeStack();
+                              lambstack = true;
+                          }
+                          else if (Player2Lambs[i].GetStack() == true && !Player1Lambs[i].Equals(lamb) && Player2Lambs[i].GetLocation().X != LambOldLocation.X)
+                          {
+                              if (lamb.GetStack() != true)
+                              {
+                                  lambstack = true;
+                              }
+                          }
+                        }
+                    }
+                    if (lambstack)
+                    {
+                        lamb.ChangeStack();
+                    }
+                    
+                    for (int i = 0; i < Player1Lambs.Length; i++)//堆疊移動
+                    {   //用mapcount判斷player剛剛點選的lamb移到哪個地圖
+                        //在判斷是否有堆疊，有的話就一起移到那個地圖
+                        if (Player1Lambs[i].GetLocation().X == LambOldLocation.X && Player1Lambs[i].GetStack() == true)
+                        {
+                            if (mapcount == 0)
+                            {//lamb.ChangeLocation(new Point(25, ClickLocation.Y - 25));
+                                Player1Lambs[i].ChangeLocation(new Point(25, i * 25));
+                            }
+                            else if (mapcount == 1)
+                            {
+                                Player1Lambs[i].ChangeLocation(new Point(160, 100 + i * 15));
+                            }
+                            else if (mapcount == 2)
+                            {
+                                Player1Lambs[i].ChangeLocation(new Point(340, 100 + i * 15));
+                            }
+                            else if (mapcount == 3)
+                            {
+                                Player1Lambs[i].ChangeLocation(new Point(510, 100 + i * 15));
+                            }
+                            else if (mapcount == 4)
+                            {
+                                Player1Lambs[i].ChangeLocation(new Point(685, 100 + i * 15));
+                            }
+                            else if (mapcount == 5)
+                            {
+                                Player1Lambs[i].ChangeLocation(new Point(845, i * 25));
+                            }
+                        }
+                        if (Player2Lambs[i].GetLocation().X == LambOldLocation.X && Player2Lambs[i].GetStack())
+                        {
+                            if (mapcount == 0)
+                            {//lamb.ChangeLocation(new Point(25, ClickLocation.Y - 25));
+                                Player2Lambs[i].ChangeLocation(new Point(25, i * 35));
+                            }
+                            else if (mapcount == 1)
+                            {
+                                Player2Lambs[i].ChangeLocation(new Point(160, 120 + i * 15));
+                            }
+                            else if (mapcount == 2)
+                            {
+                                Player2Lambs[i].ChangeLocation(new Point(340, 120 + i * 15));
+                            }
+                            else if (mapcount == 3)
+                            {
+                                Player2Lambs[i].ChangeLocation(new Point(510, 120 + i * 15));
+                            }
+                            else if (mapcount == 4)
+                            {
+                                Player2Lambs[i].ChangeLocation(new Point(685, 120 + i * 15));
+                            }
+                            else if (mapcount == 5)
+                            {
+                                Player2Lambs[i].ChangeLocation(new Point(845, i * 35));
+                            }
+                        }
+
+                    }
+
+
+
+
+
+                    for (int i = 1; i <= 4; i++)//lamb如果離開map 則將HaveLamb變數調整
+                    {
+                        MapChangeHaveLamb(i, lamb);
+                    }
+
+
+                    for (int i = 0; i < Player1Lambs.Length; i++)//判斷lamb是否抵達終點
+                    {
+                        Player1Lambs[i].ArriveEnd();
+                        Player2Lambs[i].ArriveEnd();
+                        if (Player1Lambs[i].GetLambArrived() == true && Player1Lambs[i].GetLambArriveENDcounted() != true)
                         {
                             Player1.ArrivedCount();
+                            Player1Lambs[i].ChangeLambArriveENDcounted();
                         }
-                        else
+                        if (Player2Lambs[i].GetLambArrived() == true && Player2Lambs[i].GetLambArriveENDcounted() != true)
                         {
                             Player2.ArrivedCount();
+                            Player2Lambs[i].ChangeLambArriveENDcounted();
                         }
                     }
 
-                    if (Player1.WinGame() == true)
+
+                    if (mapcount >= 1 && mapcount <= 4)
+                    {
+                        for (int i = 0; i < Player1Lambs.Length; i++)
+                        {
+                            Player1Lambs[i].Maps[mapcount].ChangeOnTheMapLamb(lamb);
+                            Player2Lambs[i].Maps[mapcount].ChangeOnTheMapLamb(lamb);
+                        }
+                    }
+
+
+                    if (Player1.WinGame() == true)//p1勝利
                     {
                         playerString = "p1";
                         EndGame = true;
                     }
-                    else if (Player2.WinGame() == true)
+                    else if (Player2.WinGame() == true)//p2勝利
                     {
                         playerString = "p2";
                         EndGame = true;
                     }
-                    else
+                    else//二者皆沒贏，繼續遊戲
                     {
                         Player1.ChangeMove();
                         Player2.ChangeMove();
@@ -243,16 +357,11 @@ namespace 黑羊白羊
             lamb.ChangeLambSmall();
             lamb.MapNoLight();
             mapcount = 111;
+            lambstack = false;
         }
         bool lambnasi;
-        public void MapChangeHaveLamb(int count)
+        public void MapChangeHaveLamb(int count,Lamb lamb)
         {
-
-
-
-
-
-
 
 
             for (int i = 0; i < Player1Lambs.Length; i++)
@@ -285,16 +394,26 @@ namespace 黑羊白羊
                 {
                     if (Player2Lambs[i].Maps[count].GetHaveLamb() == true)
                     {
-                        Player1Lambs[i].Maps[count].ChangeHaveLamb();
-                        Player2Lambs[i].Maps[count].ChangeHaveLamb();
+                        Player1Lambs[i].Maps[count].ChangeHaveLamb(null);
+                        Player2Lambs[i].Maps[count].ChangeHaveLamb(null);
+                    }
+                    else if (Player1Lambs[i].Maps[count].GetHaveLamb() == true)
+                    {
+                        Player1Lambs[i].Maps[count].ChangeHaveLamb(null);
+                        Player2Lambs[i].Maps[count].ChangeHaveLamb(null);
                     }
                 }
                 else
                 {
                     if (Player2Lambs[i].Maps[count].GetHaveLamb() == false)
                     {
-                        Player1Lambs[i].Maps[count].ChangeHaveLamb();
-                        Player2Lambs[i].Maps[count].ChangeHaveLamb();
+                        Player1Lambs[i].Maps[count].ChangeHaveLamb(lamb);
+                        Player2Lambs[i].Maps[count].ChangeHaveLamb(lamb);
+                    }
+                    else if (Player1Lambs[i].Maps[count].GetHaveLamb() == false)
+                    {
+                        Player1Lambs[i].Maps[count].ChangeHaveLamb(lamb);
+                        Player2Lambs[i].Maps[count].ChangeHaveLamb(lamb);
                     }
                 }
             }
@@ -357,6 +476,15 @@ namespace 黑羊白羊
         public bool GetEndGame()
         {
             return EndGame;
+        }
+
+        public Lamb[] testplayer1Lamb()
+        {
+            return Player1Lambs;
+        }
+        public Lamb[] testplayer2Lamb()
+        {
+            return Player2Lambs;
         }
     }
 }
