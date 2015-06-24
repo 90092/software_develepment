@@ -35,3 +35,6 @@ User Story:
     遊戲者誰先將已方羊隻全數移至對面
     估計天數:7天
     優先性:10
+
+Burndown Chart:
+![burndownchart](http://i.imgur.com/EUbgzom.jpg)
