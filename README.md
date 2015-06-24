@@ -37,4 +37,5 @@ User Story:
     優先性:10
 
 Burndown Chart:
+
 ![burndownchart](http://i.imgur.com/EUbgzom.jpg)
